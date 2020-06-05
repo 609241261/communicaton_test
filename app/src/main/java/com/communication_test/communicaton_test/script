@@ -1,0 +1,86 @@
+public void login(){
+        OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .cookieJar(cookie)
+                .build();
+
+        RequestBody requestBody = new FormBody.Builder().add("name","demo").add("password","demo").build();
+        Request request = new Request.Builder()
+                .url("http://192.168.0.6:8080/login?name=demo&password=demo")
+                .post(requestBody)
+                .build();
+        Call call = mOkHttpClient.newCall(request);
+        call.enqueue(new Callback() {//4.回调方法
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "doGet onFailure:" + e);                    }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();//获得网络数据
+                Log.d(TAG, "doGet onSuccess:" + response +"                 "+result);
+                show(result);
+            }
+        });
+    }
+
+
+private void send() {
+        OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .cookieJar(cookie)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://192.168.0.6:8080//api/policy?vid=121234")
+                .get()
+                .build();
+        Call call = mOkHttpClient.newCall(request);
+        call.enqueue(new Callback() {//4.回调方法
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "doGet onFailure:" + e);                    }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();//5.获得网络数据
+                Log.d(TAG, "doGet onSuccess:" + response +"                 "+result);
+                show(result);
+            }
+        });
+    }
+
+
+    private void show(final String result) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(result);
+            }
+        });
+    }
+
+    private void tip(final String tip_sentence) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), tip_sentence, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static String dealResponseResult(java.io.InputStream inputStream) {
+        String resultData = null;      //存储处理结果
+        java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int len = 0;
+        try {
+            while((len = inputStream.read(data)) != -1) {
+                byteArrayOutputStream.write(data, 0, len);
+            }
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+        resultData = new String(byteArrayOutputStream.toByteArray());
+        return resultData;
+    }
